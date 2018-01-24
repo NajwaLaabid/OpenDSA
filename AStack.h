@@ -7,8 +7,10 @@ using namespace std;
 /* *** ODSATag: AStack *** */ 
 // Array-based stack implementation
 /* *** ODSATag: AStackVars *** */
+// TODO SHL Eclipse gives warning (not sure why): AStack has virtual method length but non-virtual destructor
 class AStack : public Stack{
   	StackItemType stackArray[MAX_SIZE]; // Array holding stack elements
+  	// TODO SHL Eclipse gives: warning: in-class initialization of non-static data member is a C++11 extension [-Wc++11-extensions]
   	const int stack_size = MAX_SIZE; // Current number of list items
   	int top; // Position of top element of stack
     /* *** ODSAendTag: AStackVars *** */
@@ -24,7 +26,8 @@ class AStack : public Stack{
 
     // Default constructor
     // Create stack in MAX_SIZE
-    AStack() : stack_size(MAX_SIZE) { 
+  	// SHL Eclipse gives warning that top not initialized in this constructor
+    AStack() : stack_size(MAX_SIZE) {
       // Initialize the array
       for (int i = 0; i < stack_size; i++) stackArray[i] = 0;
     }// End default constructor
@@ -71,6 +74,7 @@ class AStack : public Stack{
 
     //Returns current length of stack
   	int length() { return top; } 
+  	// TODO should this be AStack for closing tag to match open one?
     /* *** OpenDSAendTag: Atack *** */
 
 };
