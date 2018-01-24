@@ -30,7 +30,7 @@ int main (void){
 
 	// Elm popped: expected: 23
 	int output = st->pop();
-	if (st->pop() != 23) {
+	if (output != 23) {
 		success = false;
 		err++;
 		cout << "Wrong output. Expected value is 23. Outputed value is " << output;
@@ -48,7 +48,7 @@ int main (void){
 
 	//general feedback
 	if (success != true) 
-		cout << "There are " << err << " errors in your code. Specific feedback has been given for each error." << endl;
+		cout << endl << "There are " << err << " errors in your code. Specific feedback has been given for each error." << endl;
 	else
 		cout << "Successful code." << endl;
 	

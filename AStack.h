@@ -30,7 +30,7 @@ class AStack : public Stack{
     }// End default constructor
 
     // Checks if stack is empty
-    bool isEmpty() const { 
+    bool isEmpty() { 
       return !top; 
     } 
 
