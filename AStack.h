@@ -21,6 +21,7 @@ class AStack : public Stack{
     // Create a new stack element of size "size" 
   	AStack(int size) : stack_size(size), top(0) {
   		// Initialize the array
+      top = 0;
       for (int i = 0; i < stack_size; i++) stackArray[i] = 0;
   	} // End constructor
 
@@ -29,6 +30,7 @@ class AStack : public Stack{
   	// SHL Eclipse gives warning that top not initialized in this constructor
     AStack() : stack_size(MAX_SIZE) {
       // Initialize the array
+      top = 0;
       for (int i = 0; i < stack_size; i++) stackArray[i] = 0;
     }// End default constructor
 
@@ -56,6 +58,7 @@ class AStack : public Stack{
       if (top == stack_size) return 0; // Stack full, cannot push
   		else {
   			stackArray[top++] = newItem;
+        //cout << "in push " << stackArray[top - 1] << endl;
   			return 1; // Push successful
   		}
   	}
@@ -74,7 +77,6 @@ class AStack : public Stack{
 
     //Returns current length of stack
   	int length() { return top; } 
-  	// TODO should this be AStack for closing tag to match open one?
-    /* *** OpenDSAendTag: Atack *** */
+    /* *** OpenDSAendTag: AStack *** */
 
 };

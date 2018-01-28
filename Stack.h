@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const int MAX_SIZE = 10;
+const int MAX_SIZE = 1000;
 typedef int StackItemType;
 
 /* *** OpenDSATag: StackADT *** */
