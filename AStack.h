@@ -10,7 +10,8 @@ using namespace std;
 // TODO SHL Eclipse gives warning (not sure why): AStack has virtual method length but non-virtual destructor
 class AStack : public Stack{
   	StackItemType stackArray[MAX_SIZE]; // Array holding stack elements
-  	// TODO SHL Eclipse gives: warning: in-class initialization of non-static data member is a C++11 extension [-Wc++11-extensions]
+  	// SHL Eclipse gives: warning: in-class initialization of non-static data member is a C++11 extension [-Wc++11-extensions]
+  	// TODO SHL: const not UPPERCASE.
   	const int stack_size = MAX_SIZE; // Current number of list items
   	int top; // Position of top element of stack
     /* *** ODSAendTag: AStackVars *** */

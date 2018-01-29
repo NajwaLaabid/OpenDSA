@@ -21,6 +21,8 @@ void createStack(AStack* st, int* tester_v, int SIZE){
 
 	for(int i = 0; i < SIZE; i++){
 		// push in stack
+		// TODO SHL I would add 100 to i. I don't think it is a good idea to use 0 as a value since it may not be from setting the value
+		// and making similar to index may miss a mistake.
 		st->push(i);
 		//cout << "in create : " << st->topValue() << endl;
 
@@ -46,6 +48,9 @@ int main (void){
 	/*Naj: function create Stack added to create stack + list in sync.
 	 * I guess the point is to see if the stack is filled as predicted?
 	 */
+	// SHL: Yes. The reason I suggested a C data structure is they have some of the standard methods to make
+	// comparison easier. However, this is harder in a stack since you have to remove them all to see if they
+	// are in the proper order (unlike a list).
 
 	createStack(st, tester_v, SIZE);
 
@@ -59,6 +64,7 @@ int main (void){
 			success = false;
 			err++;
 			cout << "Unmatching values in tester and stack. Stack value: " << popped << ". Vector value: " << tester_v[i] << endl;
+			// TODO SHL Go ahead and report all errors. Also, we may need to output to a file since scripts do these checks - need to check.
 			break; // stop at first problem
 		}
 	}
