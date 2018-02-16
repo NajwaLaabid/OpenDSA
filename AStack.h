@@ -12,7 +12,7 @@ class AStack : public Stack{
   	StackItemType stackArray[MAX_SIZE]; // Array holding stack elements
   	// SHL Eclipse gives: warning: in-class initialization of non-static data member is a C++11 extension [-Wc++11-extensions]
   	// TODO SHL: const not UPPERCASE.
-  	const int stack_size = MAX_SIZE; // Current number of list items
+  	const int STACK_SIZE = MAX_SIZE; // Current number of list items
   	int top; // Position of top element of stack
     /* *** ODSAendTag: AStackVars *** */
 
@@ -48,8 +48,13 @@ class AStack : public Stack{
     // Returns the stack in a string form
     string toString() {
       string str = "< ";
-      for (int i = top-1; i >= 0; i--) str = str + to_string(stackArray[i]) + " ";
-      str = str + ">";
+      if (top < 1){
+        str = str + "empty >";
+      }else{
+        string str = "< ";
+        for (int i = top-1; i >= 0; i--) str = str + to_string(stackArray[i]) + " ";
+        str = str + ">";
+      }
       return str;
     }
   
@@ -74,7 +79,11 @@ class AStack : public Stack{
     /* *** ODSAendTag: AStackPush *** */
 
     //Returns top element (without deleting it)
-  	StackItemType topValue() { return stackArray[top-1]; } 
+  	StackItemType topValue() { 
+      if (top == 0)
+        return -1;
+      else
+        return stackArray[top-1]; } 
 
     //Returns current length of stack
   	int length() { return top; } 
