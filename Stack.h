@@ -35,6 +35,7 @@ public:
 
   // Returns length of stack
   virtual int length() =0; 
+
   /* *** OpenDSAEndTag: StackADT *** */
 };
 

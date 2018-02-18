@@ -11,7 +11,6 @@ using namespace std;
 class AStack : public Stack{
   	StackItemType stackArray[MAX_SIZE]; // Array holding stack elements
   	// SHL Eclipse gives: warning: in-class initialization of non-static data member is a C++11 extension [-Wc++11-extensions]
-  	// TODO SHL: const not UPPERCASE.
   	const int STACK_SIZE = MAX_SIZE; // Current number of list items
   	int top; // Position of top element of stack
     /* *** ODSAendTag: AStackVars *** */
@@ -20,19 +19,19 @@ class AStack : public Stack{
 
   	// Constructor
     // Create a new stack element of size "size" 
-  	AStack(int size) : stack_size(size), top(0) {
+  	AStack(int size) : STACK_SIZE(size), top(0) {
   		// Initialize the array
       top = 0;
-      for (int i = 0; i < stack_size; i++) stackArray[i] = 0;
+      for (int i = 0; i < STACK_SIZE; i++) stackArray[i] = 0;
   	} // End constructor
 
     // Default constructor
     // Create stack in MAX_SIZE
   	// SHL Eclipse gives warning that top not initialized in this constructor
-    AStack() : stack_size(MAX_SIZE) {
+    AStack() : STACK_SIZE(MAX_SIZE) {
       // Initialize the array
       top = 0;
-      for (int i = 0; i < stack_size; i++) stackArray[i] = 0;
+      for (int i = 0; i < STACK_SIZE; i++) stackArray[i] = 0;
     }// End default constructor
 
     // Checks if stack is empty
@@ -48,10 +47,9 @@ class AStack : public Stack{
     // Returns the stack in a string form
     string toString() {
       string str = "< ";
-      if (top < 1){
+      if (top == 0){
         str = str + "empty >";
       }else{
-        string str = "< ";
         for (int i = top-1; i >= 0; i--) str = str + to_string(stackArray[i]) + " ";
         str = str + ">";
       }
@@ -61,9 +59,10 @@ class AStack : public Stack{
     /* *** ODSATag: AStackPush *** */
     // Adds newItem to stack
   	bool push(const StackItemType& newItem) {
-      if (top == stack_size) return 0; // Stack full, cannot push
+      if (top == STACK_SIZE) return 0; // Stack full, cannot push
   		else {
   			stackArray[top++] = newItem;
+        // top = top + 1;
         //cout << "in push " << stackArray[top - 1] << endl;
   			return 1; // Push successful
   		}
