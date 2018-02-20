@@ -13,6 +13,7 @@ class AStackTest {
 		// instantiating custom stack
 		static const int SIZE = 100;
 		static const int MAX_SIZE = 1000;
+		//SHL: should all these variables be public?
 		AStack * st = new AStack(SIZE);
 		AStack * st_default = new AStack();
 
@@ -20,6 +21,9 @@ class AStackTest {
 		vector<StackItemType> tester_v; //testing using arrays
 
 		// auxiliary variables
+		// SHL: First, it is the same as SIZE and not less. Second, if it should be related
+		// then would doing SIZE or SIZE - 1 make sense?
+		// Finally, would be nice to have comment on what each variable does.
 		StackItemType dummy = 100; // should be less than SIZE
 		bool success = true;
 	 	int err = 0;
@@ -29,6 +33,7 @@ class AStackTest {
 
 		AStackTest(bool useFile){
 			if (useFile == true) {
+				// SHL: the file name seems a good choice for a const.
 				errorLog.open ("errorLog.txt");
 			}
 		}
@@ -36,12 +41,19 @@ class AStackTest {
 		void run(){
 			/* State 1: empty stack after init */
 			// function: length
+			// SHL: It would be nice to save the value returned so if it is wrong you can put it into the error message.
+			// I think doing this for all values would be nice.
 			if (st->length() != 0) {
+				// SHL: First, I would put the noting of errors in the error() function since they should always
+				// be done together (success = and err++).
+				// Second, I think the \n\n should be added in error() function.
+				// Third, if err != 0 then shouldn't success be false? If so, do you need both?
 				success = false;
 				err++;
 				error("length() returns value other than 0 after init.\n\n");
 			}
 			// function: isEmpty
+			// SHL: should you use true/false instead of 1/0?
 			if (st->isEmpty() != 1) {
 				success = false;
 				err++;
@@ -81,6 +93,7 @@ class AStackTest {
 			if (st->topValue() != dummy){
 				success = false;
 				err++;
+				// SHL: Telling dummy value here could be helpful.
 				error("Unexpected topValue in stack (init test, pushing dummy). topValue: " + to_string(st->topValue()) + ". Expected dummy value: " + to_string(dummy) + "\n\n");
 			}
 			// clear dummy value
@@ -143,6 +156,7 @@ class AStackTest {
 
 			/* State 4: Special cases */
 			st->clear();
+			// SHL: Since this is automated testing, can we find a way to test this each time.
 			// push NULL
 			/*if (st->push(NULL) == 1)
 				error("Pushed NULL.\n\n");*/
@@ -150,6 +164,7 @@ class AStackTest {
 			/*if (st->push("Hi") == 1)
 				error("Pushed string when data type int.\n\n");*/
 
+			// SHL: This is okay but probably not needed since you are really testing templates within C++.
 			// push biggest int value
 			if (st->push(INT_MAX) != 1){
 				success = false;
@@ -180,8 +195,12 @@ class AStackTest {
 		}
 		
 		void check(AStack* st, vector<StackItemType> tester_v, int SIZE){
+			// SHL: Does this limit StackItemType of int since you store the pop into these variables?
 			int st_popped;
 			int tv_popped;
+			// SHL: Take a look at Yuya's code. The way we decided to do it was to pop, put on another stack, and then
+			// push it back. This means the stack should be the same after testing. It allows one to test after each
+			// push or pop instead of just after the full sequenece.
 			for (int i = SIZE; i > 0; i--){
 				st_popped = st->pop();
 				tv_popped = tester_v.back();
@@ -198,6 +217,7 @@ class AStackTest {
 			string str = "< ";
 		    if (tester_v.size() == 0){
 		    	str = str + "empty >";
+		    	// SHL: We need to check the formatting rules in OpenDSA to be sure we conform.
 		    }else{
 		    	for (int i = tester_v.size()-1; i >= 0; i--) str = str + to_string(tester_v[i]) + " ";
 		        str = str + ">";
