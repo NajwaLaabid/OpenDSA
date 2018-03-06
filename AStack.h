@@ -46,25 +46,20 @@ class AStack : public Stack{
 
     // Returns the stack in a string form
     string toString() {
-      string str = "< ";
-      if (top == 0){
-        str = str + "empty >";
-      }else{
-        for (int i = top-1; i >= 0; i--) str = str + to_string(stackArray[i]) + " ";
-        str = str + ">";
-      }
+      string str = "";
+      for (int i = top-1; i >= 0; i--) str = str + to_string(stackArray[i]) + " ";
       return str;
     }
   
     /* *** ODSATag: AStackPush *** */
     // Adds newItem to stack
   	bool push(const StackItemType& newItem) {
-      if (top == STACK_SIZE) return 0; // Stack full, cannot push
+      if (top == STACK_SIZE) return false; // Stack full, cannot push
   		else {
   			stackArray[top++] = newItem;
         // top = top + 1;
         //cout << "in push " << stackArray[top - 1] << endl;
-  			return 1; // Push successful
+  			return true; // Push successful
   		}
   	}
     /* *** ODSAendTag: AStackPush *** */

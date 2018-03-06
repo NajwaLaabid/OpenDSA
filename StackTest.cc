@@ -8,12 +8,7 @@
 using namespace std;
 
 class AStackTest {
-	public :
-
-		// instantiating custom stack
-		static const int SIZE = 100;
-		static const int MAX_SIZE = 1000;
-		//SHL: should all these variables be public?
+	private:
 		AStack * st = new AStack(SIZE);
 		AStack * st_default = new AStack();
 
@@ -21,80 +16,66 @@ class AStackTest {
 		vector<StackItemType> tester_v; //testing using arrays
 
 		// auxiliary variables
-		// SHL: First, it is the same as SIZE and not less. Second, if it should be related
-		// then would doing SIZE or SIZE - 1 make sense?
-		// Finally, would be nice to have comment on what each variable does.
 		StackItemType dummy = 100; // should be less than SIZE
-		bool success = true;
 	 	int err = 0;
 
 		// file relevant code
+		const string fileName = "errorLog.txt";
 		ofstream errorLog;
+
+	public :
+
+		// instantiating custom stack
+		static const int SIZE = 100;
+		static const int MAX_SIZE = 1000;
 
 		AStackTest(bool useFile){
 			if (useFile == true) {
-				// SHL: the file name seems a good choice for a const.
-				errorLog.open ("errorLog.txt");
+				errorLog.open(fileName);
 			}
 		}
 
 		void run(){
 			/* State 1: empty stack after init */
 			// function: length
-			// SHL: It would be nice to save the value returned so if it is wrong you can put it into the error message.
-			// I think doing this for all values would be nice.
-			if (st->length() != 0) {
-				// SHL: First, I would put the noting of errors in the error() function since they should always
-				// be done together (success = and err++).
-				// Second, I think the \n\n should be added in error() function.
-				// Third, if err != 0 then shouldn't success be false? If so, do you need both?
-				success = false;
-				err++;
-				error("length() returns value other than 0 after init.\n\n");
+			int len = st->length();
+			if (len != 0) {
+				error("length() returns value other than 0 after init. Value returned:"+ to_string(len));
 			}
 			// function: isEmpty
-			// SHL: should you use true/false instead of 1/0?
-			if (st->isEmpty() != 1) {
-				success = false;
-				err++;
-				error("isEmpty() returns false after init.\n\n");
+			bool isempty = st->isEmpty();
+			if (isempty != true) {
+				error("isEmpty() returns " + to_string(isempty) + " after init.");
 			}
 			// function: topValue
-			if (st->topValue() != -1) {
-				success = false;
-				err++;
-				error("topValue() returns value other than -1 after init.\n\n");
+			StackItemType topvalue = st->topValue();
+			if (topvalue != -1) {
+				error("topValue() returns value other than -1 after init. Value returned: " + to_string(topvalue));
 			}
 			// function: toString
-			if (st->toString() != "< empty >") {
-				success = false;
-				err++;
-				error("toString() returns value other than '< empty >' after init.\n\n");
+			string tostring = st->toString();
+			if (tostring != "") {
+				error("toString() returns value other than '' after init. Value returned: " + tostring);
 			}
 			// function: clear()
 			st->clear();
-			if (st->length() != 0) {
-				success = false;
-				err++;
-				error("length() returned value other than 0 after running clear (init testing).\n\n");
+			len = st->length();
+			if (len != 0) {
+				error("length() returned value other than 0 after running clear (init testing). Value returned: " + to_string(len));
 			}
 			// function: pop()
-			if (st->pop() != -1) {
-				success = false;
-				err++;
-				error("pop() returned value other than -1 after init.\n\n");
+			StackItemType popped = st->pop();
+			if (popped != -1) {
+				error("pop() returned value other than -1 after init. Value returned: " + to_string(popped));
 			}
 			// function: push()
-			if (st->push(dummy) != 1) {
-				success = false;
-				err++;
-				error("push() returned value other than 1 after init. Pushing dummy value:" + to_string(dummy) +"\n\n");
+			bool push_return = st->push(dummy);
+			if (push_return != true) {
+				error("push() returned value other than 'true' after init. Pushing dummy value:" + to_string(dummy) +". Value returned: " + to_string(push_return));
 			}
-			if (st->topValue() != dummy){
-				success = false;
-				err++;
-				// SHL: Telling dummy value here could be helpful.
-				error("Unexpected topValue in stack (init test, pushing dummy). topValue: " + to_string(st->topValue()) + ". Expected dummy value: " + to_string(dummy) + "\n\n");
+			topvalue = st->topValue();
+			if (topvalue != dummy){
+				error("Unexpected topValue in stack (init test, pushing dummy). topValue: " + to_string(topvalue) + ". Expected dummy value: " + to_string(dummy));
 			}
 			// clear dummy value
 			st->clear();
@@ -103,42 +84,40 @@ class AStackTest {
 			fillStack(st, &tester_v, SIZE); // push tested inside this function
 
 			// function: length (cmp to size of tester_v)
-			if (st->length() != tester_v.size()) {
-				success = false;
-				err++;
-				error("length() returns value different than size of tester_v. Length of stack: " + to_string(st->length()) + " Size of tester_v: " + to_string(tester_v.size()) + "\n\n");
+			int testersize = tester_v.size();
+			len = st->length();
+			if (len != testersize) {
+				error("length() returns value different than size of tester_v. Length of stack: " + to_string(len) + " Size of tester_v: " + to_string(testersize) + "\n\n");
 			}
 			// function: length (cmp to expected size of tester_v)
-			if (st->length() != SIZE) {
-				success = false;
-				err++;
-				error("length() returns value different than SIZE. Length of stack: " + to_string(st->length()) + " SIZE: " + to_string(SIZE) + "\n\n");
+			len = st->length();
+			if (len != SIZE) {
+				error("length() returns value different than SIZE. Length of stack: " + to_string(len) + " SIZE: " + to_string(SIZE));
 			}
 			// function: isEmpty
-			if (st->isEmpty() != 0) {
-				success = false;
-				err++;
-				error("isEmpty() returns true in normally-filled stack.\n\n");
+			isempty = st->isEmpty();
+			if (isempty != false) {
+				error("isEmpty() returns " + to_string(isempty) + " in normally-filled stack. Expected value: false.");
 			}
 			// function: topValue
-			if (st->topValue() != tester_v.back()) {
-				success = false;
-				err++;
-				error("Unexpected topValue() in normally-filled stack. topValue: " + to_string(st->topValue()) + ". Expected value: " + to_string(tester_v.back()) + ". \n\n");
+			StackItemType backvalue = tester_v.back();
+			topvalue = st->topValue();
+			if (topvalue != backvalue) {
+				error("Unexpected topValue() in normally-filled stack. topValue: " + to_string(topvalue) + ". Expected top value: " + to_string(backvalue));
 			}
 			// function: toString
-			if (st->toString() != toString(tester_v)) {
-				success = false;
-				err++;
-				error("Unexpeted toString() value. toString returned: " + st->toString() + "\n tester_v: "+ toString(tester_v) +"\n\n");
+			string stringtester = toString(tester_v);
+			tostring = st->toString();
+			if ( tostring != stringtester) {
+				error("Unexpeted toString() value. toString returned: " + tostring + ". Tester_v: "+ stringtester);
 			}
 			// function: pop. check all values of stack
 			check(st, tester_v, SIZE);
-			// check if both tester_v and stack are empty now 
-			if (st->isEmpty() != 1){
-				success = false;
-				err++;
-				error("Stack not empty after check.\n\n");
+			// check if both tester_v and stack have same size still 
+			testersize = tester_v.size();
+			len = st->length();
+			if (testersize != len){
+				error("Stack and tester_v do not have the same length after check. Size of tester: " + to_string(testersize) + ". Size of stack: " + to_string(len));
 			}
 
 			// make sure tester_v is empty
@@ -148,15 +127,16 @@ class AStackTest {
 			fillStack(st, &tester_v, SIZE);
 
 			// function : push.
-			if (st->push(dummy) != 0){
-				success = false;
-				err++;
-				error("Pushed in an overly-filled stack.\n\n");
+			push_return = st->push(dummy);
+			if (push_return != 0){
+				error("Pushed in an overly-filled stack.");
 			}
 
 			/* State 4: Special cases */
 			st->clear();
 			// SHL: Since this is automated testing, can we find a way to test this each time.
+			// Naj: Which part of the code are we talking about here?
+			
 			// push NULL
 			/*if (st->push(NULL) == 1)
 				error("Pushed NULL.\n\n");*/
@@ -164,73 +144,58 @@ class AStackTest {
 			/*if (st->push("Hi") == 1)
 				error("Pushed string when data type int.\n\n");*/
 
-			// SHL: This is okay but probably not needed since you are really testing templates within C++.
-			// push biggest int value
-			if (st->push(INT_MAX) != 1){
-				success = false;
-				err++;
-				error("Could not push INT_MAX.\n\n");
-			}
-
-			// push smallest int value
-			if (st->push(INT_MIN) != 1){
-				success = false;
-				err++;
-				error("Could not push INT_MIN.\n\n");
-			}
-
 			/* Testing default constructor */
 			fillStack(st_default, &tester_v, MAX_SIZE);
 
 			// function: length
-			if (st_default->length() != MAX_SIZE) {
-				success = false;
-				err++;
-				error("Unexpected length of st_default. Length of st_default: " + to_string(st_default->length()) + ". Expected length: " + to_string(MAX_SIZE) + "\n\n");
+			len = st_default->length();
+			if (len != MAX_SIZE) {
+				error("Unexpected length of st_default. Length of st_default: " + to_string(len) + ". Expected length: " + to_string(MAX_SIZE));
 			}
 			// global check
 			check(st_default, tester_v, MAX_SIZE);
 
-			generalFeedback(success);
+			generalFeedback(err);
 		}
 		
 		void check(AStack* st, vector<StackItemType> tester_v, int SIZE){
 			// SHL: Does this limit StackItemType of int since you store the pop into these variables?
+			// Naj: StackItemType is set in the header file to int, I can change to any other data type and test. Do you want me to do so?
+					//Should I find a way to make this change automatic since this is automated testing?
 			int st_popped;
 			int tv_popped;
-			// SHL: Take a look at Yuya's code. The way we decided to do it was to pop, put on another stack, and then
-			// push it back. This means the stack should be the same after testing. It allows one to test after each
-			// push or pop instead of just after the full sequenece.
+			vector<StackItemType> temp;
+			
 			for (int i = SIZE; i > 0; i--){
 				st_popped = st->pop();
 				tv_popped = tester_v.back();
 				if (st_popped != tv_popped) {
-					success = false;
-					err++;
-					error("In check: stack pop different than tester_v pop. Stack pop: " + to_string(st_popped) + ". Tester_v pop: " + to_string(tv_popped) + ".\n\n");
+					error("In check: stack pop different than tester_v pop. Stack pop: " + to_string(st_popped) + ". Tester_v pop: " + to_string(tv_popped));
 				}
 				tester_v.pop_back();
+				temp.push_back(st_popped);
+			}
+
+			//Restore values
+			for (int i = SIZE; i > 0; i--){
+				st->push(temp.back());
+				temp.pop_back();
 			}
 		}
 
 		string toString(vector<StackItemType> tester_v) {
-			string str = "< ";
-		    if (tester_v.size() == 0){
-		    	str = str + "empty >";
-		    	// SHL: We need to check the formatting rules in OpenDSA to be sure we conform.
-		    }else{
-		    	for (int i = tester_v.size()-1; i >= 0; i--) str = str + to_string(tester_v[i]) + " ";
-		        str = str + ">";
-		    }
-		    
+			string str = "";
+		    for (int i = tester_v.size()-1; i >= 0; i--) str = str + to_string(tester_v[i]) + " ";
+		
 		    return str;
 		}
 
 		void error(string text) {
+			err++;
 			if ( !errorLog.is_open() ) 
-				cout << text;
+				cout << text << "\n\n";
 			else
-				errorLog << text;
+				errorLog << text << "\n\n";
 		}
 
 		void fillStack(AStack* st, vector<StackItemType>* tester_v, int SIZE){
@@ -240,8 +205,8 @@ class AStackTest {
 			}
 		}
 
-	void generalFeedback(bool success){
-		if (success != true) 
+	void generalFeedback(int err){
+		if (err != 0) 
 			cout << "There are " << err << " errors in your code. You can find specific feedback in errorLog file if you chose to output to a file." << endl;
 		else
 			cout << "Successful code." << endl;
