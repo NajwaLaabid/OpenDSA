@@ -11,7 +11,6 @@ const int MAX_SIZE = 1000;
 typedef int StackItemType;
 
 /* *** OpenDSATag: StackADT *** */
-// TODO SHL Eclipse gives warning (not sure why): Stack has virtual method length but non-virtual destructor
 class Stack { // Stack class ADT
 public: 
   // Empties the stack
@@ -37,7 +36,7 @@ public:
   virtual int length() =0; 
 
   //Destructor: required for polymorphism
-  ~ Stack () = default;
+  virtual ~ Stack () = default;
   /* *** OpenDSAEndTag: StackADT *** */
 };
 
