@@ -134,19 +134,6 @@ class AStackTest {
 
 			/* State 4: Special cases */
 			st->clear();
-			// SHL: Since this is automated testing, can we find a way to test this each time.
-			// Naj: Which part of the code are we talking about here?
-			// SHL: I mean the commented out code below. The first one for NULL: not sure what you are testing.
-			// Does OpenDSA just store the NULL? The second one is another data type. Since you don't have
-			// templated code I'm not sure how this could work. So, now that I've looked at it again, I'm
-			// not sure either of these tests should be left in but am open to ideas.
-			
-			// push NULL
-			/*if (st->push(NULL) == 1)
-				error("Pushed NULL.\n\n");*/
-			// push string
-			/*if (st->push("Hi") == 1)
-				error("Pushed string when data type int.\n\n");*/
 
 			/* Testing default constructor */
 			fillStack(st_default, &tester_v, MAX_SIZE);
@@ -163,10 +150,6 @@ class AStackTest {
 		}
 		
 		void check(AStack* st, vector<StackItemType> tester_v, int SIZE){
-			// SHL: Does this limit StackItemType of int since you store the pop into these variables?
-			// Naj: StackItemType is set in the header file to int, I can change to any other data type and test. Do you want me to do so?
-					//Should I find a way to make this change automatic since this is automated testing?
-			// SHL: See above. Since you would need to edit the Stack code for another datatype, I'm not sure we should do this.
 			int st_popped;
 			int tv_popped;
 			vector<StackItemType> temp;
@@ -216,6 +199,10 @@ class AStackTest {
 		else
 			cout << "Successful code." << endl;
 	}
+
+	void exceptionHandler(int e) {
+
+	}
 };
 
 int main(void){
@@ -223,4 +210,6 @@ int main(void){
 	AStackTest test = AStackTest(useFile);
 
 	test.run();
+	
+	return 0;
 }

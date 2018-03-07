@@ -36,6 +36,8 @@ public:
   // Returns length of stack
   virtual int length() =0; 
 
+  //Destructor: required for polymorphism
+  ~ Stack () = default;
   /* *** OpenDSAEndTag: StackADT *** */
 };
 

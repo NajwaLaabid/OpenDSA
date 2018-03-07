@@ -10,8 +10,7 @@ using namespace std;
 // TODO SHL Eclipse gives warning (not sure why): AStack has virtual method length but non-virtual destructor
 class AStack : public Stack{
   	StackItemType stackArray[MAX_SIZE]; // Array holding stack elements
-  	// SHL Eclipse gives: warning: in-class initialization of non-static data member is a C++11 extension [-Wc++11-extensions]
-  	const int STACK_SIZE = MAX_SIZE; // Current number of list items
+  	const int STACK_SIZE; // Current number of list items
   	int top; // Position of top element of stack
     /* *** ODSAendTag: AStackVars *** */
 
@@ -27,7 +26,6 @@ class AStack : public Stack{
 
     // Default constructor
     // Create stack in MAX_SIZE
-  	// SHL Eclipse gives warning that top not initialized in this constructor
     AStack() : STACK_SIZE(MAX_SIZE) {
       // Initialize the array
       top = 0;
@@ -57,8 +55,6 @@ class AStack : public Stack{
       if (top == STACK_SIZE) return false; // Stack full, cannot push
   		else {
   			stackArray[top++] = newItem;
-        // top = top + 1;
-        //cout << "in push " << stackArray[top - 1] << endl;
   			return true; // Push successful
   		}
   	}
@@ -81,6 +77,9 @@ class AStack : public Stack{
 
     //Returns current length of stack
   	int length() { return top; } 
+
+    //Destructor: required for polymorphism
+    ~ AStack () = default;
     /* *** OpenDSAendTag: AStack *** */
 
 };
