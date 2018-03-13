@@ -7,7 +7,6 @@ using namespace std;
 /* *** ODSATag: AStack *** */ 
 // Array-based stack implementation
 /* *** ODSATag: AStackVars *** */
-// TODO SHL Eclipse gives warning (not sure why): AStack has virtual method length but non-virtual destructor
 class AStack : public Stack{
   	StackItemType stackArray[MAX_SIZE]; // Array holding stack elements
   	const int STACK_SIZE; // Current number of list items
