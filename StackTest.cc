@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// SHL: description of what class is for is nice.
 class AStackTest {
 	private:
 		// Declare structures to be tested: AStack object
@@ -21,7 +22,8 @@ class AStackTest {
 	 	int err = 0; // counts errors found in the code
 
 		// File relevant variables
-		const string fileName = "errorLog.txt";
+	 	//SHL: The name should probably have something to do with the type of test being done. Look at Yuya's code so we are consistent.
+	 	const string fileName = "errorLog.txt";
 		ofstream errorLog;
 
 	public :
@@ -197,9 +199,12 @@ class AStackTest {
 		    return str;
 		}
 
+		// SHL: In Java version we put error, generalFeedback into own class so can be reused for different testing codes.
+		// See about doing this and also it might be good if we used similar names to be consistent across languages.
 		// error(): prints every error to logfile / screen
 		void error(string text) {
 			err++;
+			// SHL: Put special start string at beginning of each message. See Yuya code.
 			if ( !errorLog.is_open() ) 
 				cout << text << "\n\n";
 			else
@@ -211,6 +216,7 @@ class AStackTest {
 			for(StackItemType i = 0; i < SIZE; i++){
 				st->push(i + 100);
 				tester_v->push_back(i + 100);
+				// SHL: This test is fine but you can see Yuya's code on how I had him test after each push.
 			}
 		}
 
@@ -219,11 +225,13 @@ class AStackTest {
 			if (err != 0) 
 				cout << "There are " << err << " errors in your code. You can find specific feedback in errorLog file if you chose to output to a file." << endl;
 			else
+				// SHL: See Yuya's code for a special file that is created when no errors. It is needed by the OpenDSA makefiles.
 				cout << "Successful code." << endl;
 		}
 };
 
 int main(void){
+	// SHL: Some comments here are always nice.
 	bool useFile = true;
 	AStackTest test = AStackTest(useFile);
 
