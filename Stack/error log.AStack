@@ -1,0 +1,2 @@
+* ***OpenDSA Error*** *
+length() returns value other than 0 after init. Value returned:0
