@@ -41,7 +41,7 @@ class AStackTest {
 
 			// length(): returns number of elements in AStack.
 			int len = st->length();
-			if (len == 0) {
+			if (len != 0) {
 				record->printError("length() returns value other than 0 after init. Value returned:"+ to_string(len));
 			}
 
