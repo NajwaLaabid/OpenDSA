@@ -1,4 +1,5 @@
 #include "AStack.h"
+#include "LStack.h"
 #include "../ErrorRec.h"
 #include <iostream>
 #include <fstream>
@@ -210,6 +211,9 @@ int main(void){
 	// SHL: Some comments here are always nice.
 	bool useFile = true;
 	AStackTest test = AStackTest(useFile);
+	LStack* stack = new LStack();
+
+	stack->clear();
 
 	test.run();
 	

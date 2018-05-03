@@ -1,4 +1,5 @@
 #include "AQueue.h"
+#include "LQueue.h"
 #include "../ErrorRec.h"
 #include <iostream>
 #include <fstream>
@@ -216,8 +217,10 @@ class AQueueTest {
 int main(void){
 	bool useFile = true;
 	AQueueTest test = AQueueTest(useFile);
+	LQueue* queue = new LQueue();
 
 	test.run();
+	queue->clear();
 	
 	return 0;
 }
