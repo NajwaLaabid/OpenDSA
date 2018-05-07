@@ -33,7 +33,7 @@ public:
   virtual StackItemType topValue() =0; 
 
   // Returns length of stack
-  virtual int length() =0; 
+  virtual int length() =0;
 
   //Destructor: required for polymorphism
   virtual ~ Stack () = default;

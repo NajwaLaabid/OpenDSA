@@ -37,7 +37,7 @@ public:
 // Remove "it" from stack
 /* *** ODSATag: LStackPop *** */    
   StackItemType pop() {           
-    if (top == NULL) return (StackItemType)NULL;
+    if (top == NULL) return -1;
     StackItemType it = top->element();
     top = top->next();
     size--;
@@ -46,13 +46,13 @@ public:
 /* *** ODSAendTag: LStackPop *** */
 
   StackItemType topValue() {      // Return top value
-    if (top == NULL) return (StackItemType)NULL;
+    if (top == NULL) return -1;
     return top->element();
   }
 
   // Return stack length
   int length() { return size; }
-  
+
   // Check if the stack is empty
   bool isEmpty() { return size == 0; }
 };

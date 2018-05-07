@@ -6,195 +6,139 @@
 #include <string>
 #include <vector>
 #include <climits>
+#include <typeinfo>
 
 using namespace std;
 
-/* Class used to automatically test the structure AQueue */
-class AQueueTest {
-	private:
-		// Declare structures to be tested: AQueue object
-		AQueue * qe = new AQueue(SIZE);
-		AQueue * qe_default = new AQueue();
+/* Class used to automatically test the structure Queue.
+ * Current testing strategy:
+ 	* Three main functions: 
+ 		* One for initialization : run()
+ 		* One for functions to be tested on an empty queue: checkEmpty()
+ 		* One for all functions implemented in the ADT: check()
+ 	* Functions in play (testing schema):
+ 		* Run() initializes custom ADT and built-in ADT
+ 		* Call checkEmpty() on empty ADT
+ 		* Insert elements in ADT and call check() on every insert
+*/
 
-		// Declare testing variable: C++ vector
-		vector<QueueItemType> tester_v; 
-
-		// Auxiliary variables
-		QueueItemType dummy = 100; // insert dummy value occasionally in testing 
-	 	int err = 0; // counts errors found in the code
-
-		// File relevant variables
-		ErrorRec * record;
-
+class QueueTest {
 	public :
 
-		// Instantiating custom queue
-		static const int SIZE = 100;
-		static const int MAX_SIZE = 1000;
+		// The number of items stored in queue during the test
+		const int TEST_SIZE = 100;
+		// True if you want to create a text file to record errors
+		bool useFile = true;
+		// Instance of ErrorRec class which holds the number of errors and prints
+		// out error messages
+		ErrorRec* record;
+		// built-in structure
+		vector<QueueItemType> tester_v;
+		// auxiliary vector, used in function check()
+		vector<QueueItemType> temp;
+		// custom ADT
+		Queue* q;
 
-		AQueueTest(bool useFile){
-			record = new ErrorRec(useFile, "AQueue");
+		QueueTest(bool value){
+			useFile = value;
 		}
 
-		/* Used to run test cases */
-		void run(){
-			/* State 1: empty queue after init */
-
-			// length(): returns number of elements in AQueue.
-			int len = qe->length();
-			if (len != 0) {
-				record->printError("length() returns value other than 0 after init. Value returned:"+ to_string(len));
-			}
-
-			// isEmpty(): returns 1 if AQueue is empty, 0 otherwise
-			bool isempty = qe->isEmpty();
-			if (isempty != true) {
-				record->printError("isEmpty() returns " + to_string(isempty) + " after init.");
-			}
-
-			// frontValue(): returns top of AQueue
-			QueueItemType firstElement = qe->frontValue();
-			if (firstElement != -1) {
-				record->printError("frontValue() returns value other than -1 after init. Element returned: " + to_string(firstElement));
-			}
-
-			// toString(): returns AQueue content parsed in string format
-			string tostring = qe->toString();
-			if (tostring != "") {
-				record->printError("toString() returns value other than '' after init. Value returned: " + tostring);
-			}
-
-			// clear(): empties AQueue. No returned value.
-			qe->clear();
-			len = qe->length();
-			if (len != 0) {
-				record->printError("length() returned value other than 0 after running clear (init testing). Value returned: " + to_string(len));
-			}
-			// dequeue(): removes and returns top value of AQueue.
-			QueueItemType dequeued = qe->dequeue();
-			if (dequeued != -1) {
-				record->printError("dequeue() returned value other than -1 after init. Value returned: " + to_string(dequeued));
-			}
-			// enqueue(): adds a QueueItemType to the top of AQueue. 
-			bool enqueue_return = qe->enqueue(dummy);
-			if (enqueue_return != true) {
-				record->printError("enqueue() returned value other than 'true' after init. Enqueuing dummy value:" + to_string(dummy) +". Value returned: " + to_string(enqueue_return));
-			}
-
-			// frontValue(): see above
-			firstElement = qe->frontValue();
-			if (firstElement != dummy){
-				record->printError("Unexpected firstElement in queue (init test, enqueuing dummy). firstElement: " + to_string(firstElement) + ". Expected dummy value: " + to_string(dummy));
-			}
-
-			// clear dummy value
-			qe->clear();
-
-			/* State 2: normally-filled queue */
-			fillQueue(qe, &tester_v, SIZE);
-
-			// cmp length to size of tester_v
-			int testersize = tester_v.size();
-			len = qe->length();
-			if (len != testersize) {
-				record->printError("length() returns value different than size of tester_v. Length of queue: " + to_string(len) + " Size of tester_v: " + to_string(testersize) + "\n\n");
-			}
-
-			// cmp length to expected size of tester_v
-			len = qe->length();
-			if (len != SIZE) {
-				record->printError("length() returns value different than SIZE. Length of queue: " + to_string(len) + " SIZE: " + to_string(SIZE));
-			}
-
-			// check isEmpty
-			isempty = qe->isEmpty();
-			if (isempty != false) {
-				record->printError("isEmpty() returns " + to_string(isempty) + " in normally-filled queue. Expected value: false.");
-			}
-
-			// check firstElement
-			QueueItemType frontvalue_t = tester_v.front();
-			firstElement = qe->frontValue();
-			if (firstElement != frontvalue_t) {
-				record->printError("Unexpected frontValue() in normally-filled queue. firstElement: " + to_string(firstElement) + ". Expected front value: " + to_string(frontvalue_t));
-			}
-
-			// check toString
-			string stringtester = toString(tester_v);
-			tostring = qe->toString();
-			if ( tostring != stringtester) {
-				record->printError("Unexpeted toString() value. toString returned: " + tostring + ". Tester_v: "+ stringtester);
-			}
-
-			// check(): removes and checks all values of queue
-			check(qe, tester_v, SIZE);
-
-			// check if tester_v and queue still have same size  
-			testersize = tester_v.size();
-			len = qe->length();
-			if (testersize != len){
-				record->printError("Queue and tester_v do not have the same length after check. Size of tester: " + to_string(testersize) + ". Size of queue: " + to_string(len));
-			}
-
-			// make sure tester_v is empty
+		void run( Queue* queue, string className ) {
+			// empty vectors from potential previous runs
+			temp.clear();
 			tester_v.clear();
 
-			/* State 3: overly-filled queue */
-			fillQueue(qe, &tester_v, SIZE);
+			// initialize a new file for every run of the function
+			// (probably testing a new class)
+			record = new ErrorRec( useFile, className );
 
-			// enqueue in a full queue
-			enqueue_return = qe->enqueue(dummy);
-			if (enqueue_return != 0){
-				record->printError("Enqueued in an overly-filled queue.");
-			}
+			// initialize custom queue
+			q = queue;
 
-			/* State 4: Special cases */
-			qe->clear();
-			tester_v.clear();
+			// first round of tests: on an empty queue
+			checkEmpty();
 
-			/* Testing default constructor */
-			fillQueue(qe_default, &tester_v, MAX_SIZE);
+			// second round of tests: run all functions on every addition
+			// for(int i = 0; i < TEST_SIZE; i++) 
+			// 	check(100 + i);
 
-			// check length
-			len = qe_default->length();
-			if (len != MAX_SIZE) {
-				record->printError("Unexpected length of st_default. Length of qe_default: " + to_string(len) + ". Expected length: " + to_string(MAX_SIZE));
-			}
-
-			stringtester = toString(tester_v);
-			tostring = qe_default->toString();
-			if ( tostring != stringtester) {
-				record->printError("Unexpeted toString() value. toString returned: " + tostring + ". Tester_v: "+ stringtester);
-			}
-
-			// remove and check all values of Queue
-			check(qe_default, tester_v, MAX_SIZE);
-
-			// generalFeedback(): says if code is successful or not.
+			// output general feedback: success/ error message
 			record->feedback();
 		}
-		
-		// check(): removes and checks all values of queue
-		void check(AQueue* qe, vector<QueueItemType> tester_v, int SIZE){
-			int qe_dequeued;
-			int tv_dequeued;
-			vector<QueueItemType> temp;
-			
-			for (int i = SIZE; i > 0; i--){
-				qe_dequeued = qe->dequeue();
-				tv_dequeued = tester_v.front();
-				if (qe_dequeued != tv_dequeued) {
-					record->printError("In check: queue dequeue different than tester_v front. Queue dequeued: " + to_string(qe_dequeued) + ". Tester_v front: " + to_string(tv_dequeued));
-				}
-				tester_v.erase(tester_v.begin());
-				temp.push_back(qe_dequeued);
-			}
 
-			//Restore values
-			for (int i = SIZE; i > 0; i--){
-				qe->enqueue(temp.front());
-				temp.erase(temp.begin());
-			}
+		void checkEmpty() {
+			// length(): returns number of elements in queue.
+			if ( q->length() != 0 ) 
+				record->printError( "length() returns value other than 0 after init. Value returned:"+ to_string( q->length() ) );
+			
+			// isEmpty(): returns 1 if queue is empty, 0 otherwise
+			if ( q->isEmpty() != true ) 
+				record->printError( "isEmpty() returns " + to_string( q->isEmpty() ) + " after init." );
+
+			// frontValue(): returns top of queue
+			if ( q->frontValue() != -1 ) 
+				record->printError( "frontValue() returns value other than -1 after init. Value returned: " + to_string( q->frontValue() ) );
+
+			// dequeue(): removes and returns front value of queue.
+			QueueItemType dequeued = q->dequeue();
+			if ( dequeued != -1 ) 
+				record->printError( "dequeue() returned value other than -1 after init. Value returned: " + to_string( dequeued ) );
+
+			// toString(): returns queue content parsed in string format
+			if ( q->toString() != "" )
+				record->printError( "toString() returns value other than '' after init. Value returned: " + q->toString() );
+
+			// // clear(): empties queue. No returned value.
+			// q->clear();
+		
+			// // check length after clear
+			// if ( q->length() != 0 ) 
+			// 	record->printError( "length() returned value other than 0 after running clear (testing empty queue). Value returned: " + to_string( q->length() ) );		
+		
+		}
+
+		void check( QueueItemType item ){
+			
+			// Add the item to both queues
+			q->enqueue(item);
+			tester_v.push_back(item);
+
+			//cmp length to size of tester_v
+			if (q->length() != tester_v.size()) 
+				record->printError("length() of queue: " + to_string(q->length())
+					+ ". Length expected: " + to_string(tester_v.size()));
+			
+			// check isEmpty
+			if (q->isEmpty() != false)
+				record->printError("isEmpty() returns " + to_string(q->isEmpty()) + " in normally-filled queue. Expected value: false.");
+
+			// check frontValue
+			if ( q->frontValue() != tester_v.front() ) 
+				record->printError("Unexpected frontValue() in normally-filled queue. frontValue: " + to_string(q->frontValue()) + ". Expected top value: " + to_string(tester_v.front()));
+
+			// check toString
+			if ( q->toString() != toString(tester_v) ) 
+				record->printError( "Unexpeted toString() value. toString returned: " + q->toString() + ". Tester_v: "+ toString(tester_v) );
+			
+			/* Memory problem */
+			
+			/*
+				QueueItemType q_dequeued;
+				QueueItemType tv_dequeued;
+				
+				int curSize = st->length();
+				
+				// cout << st->length() << endl;
+				for(int i = 0; i < curSize; i++) {
+					q_dequeued = st->dequeue();
+					tv_dequeued = tester_v.front();
+					if (q_dequeued != tv_dequeued) 
+						record->printError( "Class: " + className + ". In check: queue dequeue different than tester_v dequeue. Queue dequeue: " + to_string(q_dequeued) + ". Tester_v dequeue: " + to_string(tv_dequeued) );
+					
+					st->enqueue(q_dequeued);
+					tester_v.push_back( q_dequeued );
+				}
+			*/
 		}
 
 		//converts the test queue to string following the expected string format of AQueue
@@ -204,23 +148,28 @@ class AQueueTest {
 		
 		    return str;
 		}
-
-		// initialize the test queue
-		void fillQueue(AQueue* qe, vector<QueueItemType>* tester_v, int SIZE){
-			for(QueueItemType i = 0; i < SIZE; i++){
-				qe->enqueue(i + 100);
-				tester_v->push_back(i + 100);
-			}
-		}
 };
 
 int main(void){
-	bool useFile = true;
-	AQueueTest test = AQueueTest(useFile);
-	LQueue* queue = new LQueue();
+	// true when want to use log files
+	// false when prefer to print to screen
+	bool useFile = true; 
+	// instatiating testing class
+	QueueTest test = QueueTest(useFile);
 
-	test.run();
-	queue->clear();
+	int size = 100;
+
+	// Testing array implementation of queue
+	AQueue * aQ = new AQueue(size);
+	AQueue * aQ_default = new AQueue();
+
+	// test.run(aQ, "AQueue");
+	// test.run(aQ_default, "aQueue_default");
+
+	// Testing linked list implementation of queue
+	LQueue* lQ = new LQueue();
+
+	test.run(lQ, "LQueue");
 	
 	return 0;
 }

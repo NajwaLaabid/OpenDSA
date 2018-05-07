@@ -1,12 +1,15 @@
+#include <string>
+
 typedef int LinkItemType;
 
 class Link { 	// Singly linked list node class
-	LinkItemType e = 0; // Value for this node
-	Link* n;  // Point to next node in list
+
 
   public:
+    LinkItemType e = 0; // Value for this node
+    Link* n;  // Point to next node in list
     // constructors
-    Link() {}
+    // Link() {}
     Link(LinkItemType it, Link* inn) { e = it; n = inn; } 
     Link(Link* inn) { n = inn; } 
 

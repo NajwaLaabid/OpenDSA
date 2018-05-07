@@ -6,187 +6,148 @@
 #include <string>
 #include <vector>
 #include <climits>
+#include <typeinfo>
 
 using namespace std;
 
-/* Class used to automatically test the structure AStack */
-class AStackTest {
-	private:
-		// Declare structures to be tested: AStack object
-		AStack * st = new AStack(SIZE);
-		AStack * st_default = new AStack();
+/* Class used to automatically test the structure Stack.
+ * Current testing strategy:
+ 	* Three main functions: 
+ 		* One for initialization : run()
+ 		* One for functions to be tested on an empty stack: checkEmpty()
+ 		* One for all functions implemented in the ADT: check()
+ 	* Functions in play (testing schema):
+ 		* Run() initializes custom ADT and built-in ADT
+ 		* Call checkEmpty() on empty ADT
+ 		* Insert elements in ADT and call check() on every insert
+*/
 
-		// Declare testing variable: C++ vector
-		vector<StackItemType> tester_v; 
-
-		// Auxiliary variables
-		StackItemType dummy = 100; // insert dummy value occasionally in testing 
-	 	int err = 0; // counts errors found in the code
-
-		// File relevant variables
-	 	ErrorRec * record;
-
+class StackTest {
 	public :
 
-		// Instantiating custom stack
-		static const int SIZE = 100;
-		static const int MAX_SIZE = 1000;
+		// The number of items stored in stack during the test
+		const int TEST_SIZE = 100;
+		// True if you want to create a text file to record errors
+		bool useFile = true;
+		// Instance of ErrorRec class which holds the number of errors and prints
+		// out error messages
+		ErrorRec* record;
+		// built-in structure
+		vector<StackItemType> tester_v;
+		// auxiliary vector, used in function check()
+		vector<StackItemType> temp;
+		// custom ADT
+		Stack* st;
 
-		AStackTest(bool useFile){
-			record = new ErrorRec(useFile, "AStack");
+		StackTest(bool value){
+			useFile = value;
 		}
 
-		/* Used to run test cases */
-		void run(){
-			/* State 1: empty stack after init */
-
-			// length(): returns number of elements in AStack.
-			int len = st->length();
-			if (len != 0) {
-				record->printError("length() returns value other than 0 after init. Value returned:"+ to_string(len));
-			}
-
-			// isEmpty(): returns 1 if AStack is empty, 0 otherwise
-			bool isempty = st->isEmpty();
-			if (isempty != true) {
-				record->printError("isEmpty() returns " + to_string(isempty) + " after init.");
-			}
-
-			// topValue(): returns top of AStack
-			StackItemType topvalue = st->topValue();
-			if (topvalue != -1) {
-				record->printError("topValue() returns value other than -1 after init. Value returned: " + to_string(topvalue));
-			}
-
-			// toString(): returns AStack content parsed in string format
-			string tostring = st->toString();
-			if (tostring != "") {
-				record->printError("toString() returns value other than '' after init. Value returned: " + tostring);
-			}
-
-			// clear(): empties AStack. No returned value.
-			st->clear();
-			len = st->length();
-			if (len != 0) {
-				record->printError("length() returned value other than 0 after running clear (init testing). Value returned: " + to_string(len));
-			}
-			// pop(): removes and returns top value of AStack.
-			StackItemType popped = st->pop();
-			if (popped != -1) {
-				record->printError("pop() returned value other than -1 after init. Value returned: " + to_string(popped));
-			}
-			// push(): adds a StackItemType to the top of AStack. 
-			bool push_return = st->push(dummy);
-			if (push_return != true) {
-				record->printError("push() returned value other than 'true' after init. Pushing dummy value:" + to_string(dummy) +". Value returned: " + to_string(push_return));
-			}
-
-			// topValue(): see above
-			topvalue = st->topValue();
-			if (topvalue != dummy){
-				record->printError("Unexpected topValue in stack (init test, pushing dummy). topValue: " + to_string(topvalue) + ". Expected dummy value: " + to_string(dummy));
-			}
-
-			// clear dummy value
-			st->clear();
-
-			/* State 2: normally-filled stack */
-			fillStack(st, &tester_v, SIZE);
-
-			// cmp length to size of tester_v
-			int testersize = tester_v.size();
-			len = st->length();
-			if (len != testersize) {
-				record->printError("length() returns value different than size of tester_v. Length of stack: " + to_string(len) + " Size of tester_v: " + to_string(testersize) + "\n\n");
-			}
-
-			// cmp length to expected size of tester_v
-			len = st->length();
-			if (len != SIZE) {
-				record->printError("length() returns value different than SIZE. Length of stack: " + to_string(len) + " SIZE: " + to_string(SIZE));
-			}
-
-			// check isEmpty
-			isempty = st->isEmpty();
-			if (isempty != false) {
-				record->printError("isEmpty() returns " + to_string(isempty) + " in normally-filled stack. Expected value: false.");
-			}
-
-			// check topValue
-			StackItemType backvalue = tester_v.back();
-			topvalue = st->topValue();
-			if (topvalue != backvalue) {
-				record->printError("Unexpected topValue() in normally-filled stack. topValue: " + to_string(topvalue) + ". Expected top value: " + to_string(backvalue));
-			}
-
-			// check toString
-			string stringtester = toString(tester_v);
-			tostring = st->toString();
-			if ( tostring != stringtester) {
-				record->printError("Unexpeted toString() value. toString returned: " + tostring + ". Tester_v: "+ stringtester);
-			}
-
-			// check(): pops and checks all values of stack
-			check(st, tester_v, SIZE);
-
-			// check if tester_v and stack still have same size  
-			testersize = tester_v.size();
-			len = st->length();
-			if (testersize != len){
-				record->printError("Stack and tester_v do not have the same length after check. Size of tester: " + to_string(testersize) + ". Size of stack: " + to_string(len));
-			}
-
-			// make sure tester_v is empty
+		void run( Stack* stack, string className ) {
+			// empty vectors from potential previous runs
+			temp.clear();
 			tester_v.clear();
 
-			/* State 3: overly-filled stack */
-			fillStack(st, &tester_v, SIZE);
+			// initialize a new file for every run of the function
+			// (probably testing a new class)
+			record = new ErrorRec( useFile, className );
 
-			// push in a full stack
-			push_return = st->push(dummy);
-			if (push_return != 0){
-				record->printError("Pushed in an overly-filled stack.");
-			}
+			// initialize custom stack
+			st = stack;
 
-			/* State 4: Special cases */
-			st->clear();
+			// first round of tests: on an empty stack
+			checkEmpty();
 
-			/* Testing default constructor */
-			fillStack(st_default, &tester_v, MAX_SIZE);
+			// second round of tests: run all functions on every addition
+			for(int i = 0; i < TEST_SIZE; i++) 
+				check(100 + i);
 
-			// check length
-			len = st_default->length();
-			if (len != MAX_SIZE) {
-				record->printError("Unexpected length of st_default. Length of st_default: " + to_string(len) + ". Expected length: " + to_string(MAX_SIZE));
-			}
-			// pop and check all values of Stack
-			check(st_default, tester_v, MAX_SIZE);
-
-			// generalFeedback(): says if code is successful or not.
+			// output general feedback: success/ error message
 			record->feedback();
 		}
-		
-		// check(): pops and checks all values of stack
-		void check(AStack* st, vector<StackItemType> tester_v, int SIZE){
-			int st_popped;
-			int tv_popped;
-			vector<StackItemType> temp;
-			
-			for (int i = SIZE; i > 0; i--){
-				st_popped = st->pop();
-				tv_popped = tester_v.back();
-				if (st_popped != tv_popped) {
-					record->printError("In check: stack pop different than tester_v pop. Stack pop: " + to_string(st_popped) + ". Tester_v pop: " + to_string(tv_popped));
-				}
-				tester_v.pop_back();
-				temp.push_back(st_popped);
-			}
 
-			//Restore values
-			for (int i = SIZE; i > 0; i--){
-				st->push(temp.back());
-				temp.pop_back();
-			}
+		void checkEmpty() {
+			// length(): returns number of elements in stack.
+			if (st->length() != 0) 
+				record->printError("length() returns value other than 0 after init. Value returned:"+ to_string(st->length()));
+			
+			// isEmpty(): returns 1 if stack is empty, 0 otherwise
+			if (st->isEmpty() != true) 
+				record->printError("isEmpty() returns " + to_string(st->isEmpty()) + " after init.");
+
+			// topValue(): returns top of stack
+			if (st->topValue() != -1) 
+				record->printError("topValue() returns value other than -1 after init. Value returned: " + to_string(st->topValue()));
+
+			// pop(): removes and returns top value of stack.
+			StackItemType popped = st->pop();
+			if (popped != -1) 
+				record->printError("pop() returned value other than -1 after init. Value returned: " + to_string(popped));
+
+			// toString(): returns stack content parsed in string format
+			if (st->toString() != "")
+				record->printError("toString() returns value other than '' after init. Value returned: " + st->toString());
+
+			// clear(): empties stack. No returned value.
+			st->clear();
+		
+			// check length after clear
+			if (st->length() != 0) 
+				record->printError("length() returned value other than 0 after running clear (testing empty stack). Value returned: " + to_string(st->length()));		
+		
+		}
+
+		void check(StackItemType item){
+			
+			// Add the item to both stacks
+			st->push(item);
+			tester_v.push_back(item);
+
+			//cmp length to size of tester_v
+			if (st->length() != tester_v.size()) 
+				record->printError("length() of stack: " + to_string(st->length())
+					+ ". Length expected: " + to_string(tester_v.size()));
+			
+			// check isEmpty
+			if (st->isEmpty() != false)
+				record->printError("isEmpty() returns " + to_string(st->isEmpty()) + " in normally-filled stack. Expected value: false.");
+
+			// check topValue
+			if ( st->topValue() != tester_v.back() ) 
+				record->printError("Unexpected topValue() in normally-filled stack. topValue: " + to_string(st->topValue()) + ". Expected top value: " + to_string(tester_v.back()));
+
+			// check toString
+			if ( st->toString() != toString(tester_v) ) 
+				record->printError( "Unexpeted toString() value. toString returned: " + st->toString() + ". Tester_v: "+ toString(tester_v) );
+			
+			/* Memory problem */
+			
+			/*
+				StackItemType st_popped;
+				StackItemType tv_popped;
+				
+				int curSize = st->length();
+				
+				// cout << st->length() << endl;
+				for(int i = 0; i < curSize; i++) {
+					st_popped = st->pop();
+					tv_popped = tester_v.back();
+					if (st_popped != tv_popped) 
+						record->printError( "Class: " + className + ". In check: stack pop different than tester_v pop. Stack pop: " + to_string(st_popped) + ". Tester_v pop: " + to_string(tv_popped) );
+					
+					tester_v.pop_back();
+					temp.push_back( st_popped );
+				}
+				
+				//Restore values
+				for(int i = 0; i < curSize; i++) {
+
+					st->push(temp.back());
+					temp.pop_back();
+				}
+
+				temp.clear();
+			*/
 		}
 
 		//converts the test stack to string following the expected string format of AStack
@@ -196,26 +157,28 @@ class AStackTest {
 		
 		    return str;
 		}
-
-		// initialize the test stack
-		void fillStack(AStack* st, vector<StackItemType>* tester_v, int SIZE){
-			for(StackItemType i = 0; i < SIZE; i++){
-				st->push(i + 100);
-				tester_v->push_back(i + 100);
-				// SHL: This test is fine but you can see Yuya's code on how I had him test after each push.
-			}
-		}
 };
 
 int main(void){
-	// SHL: Some comments here are always nice.
-	bool useFile = true;
-	AStackTest test = AStackTest(useFile);
-	LStack* stack = new LStack();
+	// true when want to use log files
+	// false when prefer to print to screen
+	bool useFile = true; 
+	// instatiating testing class
+	StackTest test = StackTest(useFile);
 
-	stack->clear();
+	int size = 100;
 
-	test.run();
+	// Testing array implementation of stack
+	AStack * aSt = new AStack(size);
+	AStack * aSt_default = new AStack();
+
+	test.run(aSt, "AStack");
+	test.run(aSt_default, "AStack_default");
+
+	// Testing linked list implementation of stack
+	LStack* lSt = new LStack();
+
+	test.run(lSt, "LStack");
 	
 	return 0;
 }

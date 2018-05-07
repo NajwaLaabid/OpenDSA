@@ -19,7 +19,7 @@ public:
 
   // Initialize queue
   void init() {
-    front = rear = new Link(NULL);
+    front = new Link((LinkItemType)10, NULL);
     size = 0;
   }
 /* *** ODSAendTag: LQueue1 *** */
@@ -29,10 +29,18 @@ public:
 
   string toString() {
     string out;
-    for (Link* temp = front->next(); temp != NULL;  temp = temp->next()) {
-      out.append( to_string( temp->element() ) );
-      out.append(" ");
+    if(front != NULL) {
+      out = to_string(front->element());
+      // cout << front->e << endl;
+    } else {
+
+      for (Link* temp = front; temp != NULL;  temp = temp->next()) {
+        out.append( to_string( temp->element() ) );
+        out.append(" ");
+      }
+
     }
+    
     return out;
   }
 /* *** ODSATag: LQueue2 *** */
@@ -51,7 +59,7 @@ public:
 /* *** ODSATag: LQueueDequeue *** */
   // Remove and return element from front
   QueueItemType dequeue() {
-    if (size == 0) return (QueueItemType)NULL;
+    if (size == 0) return -1;
     QueueItemType it = front->next()->element(); // Store the value
     front->setNext(front->next()->next()); // Advance front
     if (front->next() == NULL) rear = front; // Last element
@@ -62,7 +70,7 @@ public:
 
   // Return front element
   QueueItemType frontValue() {
-    if (size == 0) return (QueueItemType)NULL;
+    if (size == 0) return -1;
     return front->next()->element();
   }
 
